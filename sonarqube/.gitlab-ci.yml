@@ -1,0 +1,38 @@
+stages:
+  - pre_build
+
+sonarqube_check:
+  stage: pre_build
+  before_script: []
+  rules:
+    - if: $CI_COMMIT_REF_NAME == $CI_MERGE_REQUEST_SOURCE_BRANCH_NAME || $CI_COMMIT_REF_NAME == $CI_MERGE_REQUEST_TARGET_BRANCH_NAME
+  variables:
+    SONAR_USER_HOME: "${CI_PROJECT_DIR}/.sonar" # Defines the location of the analysis task cache
+    GIT_DEPTH: "0" # Tells git to fetch all the branches of the project, required by the analysis task
+  cache:
+    key: "${CI_JOB_NAME}"
+    paths:
+      - .sonar/cache
+  script:
+    - node -v
+    - sonar-scanner
+  tags:
+    - sonar
+
+sonarqube_vulnerability_report:
+  stage: pre_build
+  before_script: []
+  dependencies:
+    - sonarqube_check
+  rules:
+    - if: $CI_COMMIT_REF_NAME == $CI_MERGE_REQUEST_SOURCE_BRANCH_NAME || $CI_COMMIT_REF_NAME == $CI_MERGE_REQUEST_TARGET_BRANCH_NAME
+  script:
+    - which curl
+    - 'curl -u "${SONAR_TOKEN}:" "${SONAR_HOST_URL}/api/issues/gitlab_sast_export?projectKey=nodejs_nestjs_nestjs-restful_AYqMTK4wRTP3tKip7u8Q&branch=${CI_COMMIT_BRANCH}&pullRequest=${CI_MERGE_REQUEST_IID}" -o gl-sast-sonar-report.json'
+  allow_failure: true
+  artifacts:
+    expire_in: 1 day
+    reports:
+      sast: gl-sast-sonar-report.json
+  tags:
+    - sonar
