@@ -19,7 +19,7 @@ sudo reboot
 - Install OpenJDK 17.
 
 ```bash
-sudo apt install -y openjdk-11-jdk
+sudo apt install -y openjdk-17-jdk
 ```
 
 > **NOTE:** In the future, SonarQube will update to the newer version and require a newer Java version.
@@ -38,7 +38,7 @@ sudo apt install -y openjdk-11-jdk
 docker compose up --build -d
 ```
 
-## Access SonarQube Web Interface
+## 4. Access SonarQube Web Interface
 
 - Access SonarQube in a web browser at your server's IP address on port 9000. For example:
   http://localhost:9090 (According to SonarQube port config in [docker-compose.yml](./docker-compose.yml?plain=1#L20) file)
@@ -48,10 +48,10 @@ docker compose up --build -d
 > **WARNING!**
 > SonarQube ships with a default administrator username and password of admin. This default password is not secure, so you’ll want to update it to something more secure as a good security practice.
 
-## Secure SonarQube
+## 5. Secure SonarQube
 
 > **NOTE:**
-> The following contents were quoted from [DigitlOcean site tutorial page](https://www.digitalocean.com/community/tutorials/how-to-ensure-code-quality-with-sonarqube-on-ubuntu-18-04),
+> The following contents were quoted from [DigitalOcean site tutorial page](https://www.digitalocean.com/community/tutorials/how-to-ensure-code-quality-with-sonarqube-on-ubuntu-18-04),
 > especially from **Step 5 - Securing SonarQube** to the end of that page.
 
 Start by visiting the URL of your installation, and log in using the default credentials.
@@ -87,7 +87,7 @@ then click on the `Save` button below the switch.
 
 Now that you’re done setting up the server, let’s set up the SonarQube scanner.
 
-## Setting Up the Code Scanner
+## 6. Setting Up the Code Scanner
 
 SonarQube’s code scanner is a separate package that you can install on a different machine than the one running
 the SonarQube server, such as your local development workstation or a continuous delivery server. There are
@@ -137,7 +137,7 @@ sudo nano sonar-scanner-cli-5.0.1.3006-linux/conf/sonar-scanner.properties
 > sonar.host.url=http://127.0.0.1:9090
 > ```
 >
-> **NOTE:** If you want to integrate sonar-scanner with gitlab-runner, you need to change the host url to your Ubuntu IP address.
+> **NOTE:** If you want to integrate with GitLab, you need to change the host url to your Ubuntu IP address.
 >
 > ```
 > sonar.host.url=http://192.168.10.33:9090
@@ -162,7 +162,7 @@ sudo ln -s /opt/sonarscanner/sonar-scanner-cli-5.0.1.3006-linux/bin/sonar-scanne
 
 - Now that the scanner is set up, we’re ready to run our first code scan.
 
-## 12. Run a Test Scan on SonarQube Example Projects
+## 7. Run a Test Scan on SonarQube Example Projects
 
 If you’d like to just poke around with SonarQube to see what it can do,
 you might consider running a test scan on the SonarQube example projects.
@@ -189,7 +189,7 @@ git clone https://github.com/SonarSource/sonar-scanning-examples.git example_pro
 cd example_project/sonarqube-scanner
 ```
 
-- Run the scanner, passing it the token you created earlier in Section 10:
+- Run the scanner, passing it the token you created earlier in [Section 5](#5-secure-sonarqube):
 
 ```bash
 sonar-scanner -D sonar.login=your_token_here
@@ -208,11 +208,11 @@ sonar-scanner -D sonar.login=your_token_here
 > ```
 >
 > The example project’s report will now be on the SonarQube dashboard like so:
-> ![screenshot4](xzmQXIR.png)
+> ![screenshot5](screenshot5.png)
 >
 > Now that you’ve confirmed that the SonarQube server and scanner works with the test code, you can use SonarQube to analyze your own code.
 
-## 13. Run a Scan on Your Own Code
+## 8. Run a Scan on Your Own Code
 
 To have SonarQube analyze your own code, start by transferring your project to the server, or follow Step 6
 to install and configure the SonarQube scanner on your workstation and configure it to point to your
@@ -269,51 +269,52 @@ sonar-scanner -D sonar.login=your_token_here
 
 - The project’s code quality report will now be on the SonarQube dashboard.
 
-## Custom Quality Gates
+## 9. Custom Quality Gates
 
 Check this [tutorial](https://youtu.be/x2CbwvXUTAs).
 
-## Custom Quality Profiles
+## 10. Custom Quality Profiles
 
 Check this [tutorial](https://youtu.be/54YY2E41_Pg).
 
-## Intergrate SonarQube with GitLab
+## 11. Intergrate SonarQube with GitLab
 
-**Step 1:** Choose "Import from Gitlab"
-
+**Step 1:** Choose "Import from Gitlab".
 ![gitlab1](./gitlab1.png)
 
-**Step 2:** Fill all fields with your GitLab information
-
-**Step 3:** Fill the field with your GitLab presonal access token
-
-**Step 4:** Import the project you want integrate
+**Step 2:** Fill all fields with your GitLab information.
 ![gitlab2](./gitlab2.png)
 
-**Step 5:** Choose "Use the global setting"
+**Step 3:** Fill the field with your GitLab Personal Access Token.
 ![gitlab3](./gitlab3.png)
 
-**Step 6:** Choose "With GitLab CI"
+**Step 4:** Import the project you want integrate.
 ![gitlab4](./gitlab4.png)
 
-**Step 7:** Add SONAR_TOKEN variable
+**Step 5:** Choose "Use the global setting".
 ![gitlab5](./gitlab5.png)
+
+**Step 6:** Choose "With GitLab CI".
 ![gitlab6](./gitlab6.png)
 
-> **NOTE:** This value is the same as [this](./installation.MD#L77) value or you can create a new token.
-
-**Step 8:** Add SONAR_HOST_URL variable
+**Step 7:** Add SONAR_TOKEN variable.
 ![gitlab7](./gitlab7.png)
 ![gitlab8](./gitlab8.png)
 
-> **NOTE:** This value is the same as [this](./installation.MD#L143) value or you can create a new token.
+> **NOTE:** This value is the same as the token you created earlier in [Section 5](#5-secure-sonarqube) or you can create a new token.
 
-**Step 9:** Update project key to sonar-project.properties
+**Step 8:** Add SONAR_HOST_URL variable.
 ![gitlab9](./gitlab9.png)
-
-> **NOTE:** Check this [file](./sonar-project.properties) for reference
-
-**Step 10:** Setup gitlab-ci.yml file
 ![gitlab10](./gitlab10.png)
 
-> **NOTE:** Check this [file](./.gitlab-ci.yml) for reference
+> **NOTE:** This value is the same as the sonar.host.url value in [Section 6](#6-setting-up-the-code-scanner).
+
+**Step 9:** Update project key to sonar-project.properties
+![gitlab11](./gitlab11.png)
+
+> **NOTE:** Check this [file](./sonar-project.properties) for reference.
+
+**Step 10:** Config gitlab-ci.yml file.
+![gitlab12](./gitlab12.png)
+
+> **NOTE:** Check this [file](./.gitlab-ci.yml) for reference.
