@@ -1,0 +1,3 @@
+# INSTALLATION GUIDE
+
+**SonarQube**: [INSTALLATION.md](./sonarqube/INSTALLATION.md)
